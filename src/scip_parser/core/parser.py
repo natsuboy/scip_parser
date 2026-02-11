@@ -277,7 +277,7 @@ class SCIPParser:
             if inferred_kind != SymbolKind.Unspecified:
                 kind = inferred_kind
                 logger.warning(
-                    f"SymbolInformation.kind 未指定，从符号推断: {pb_sym_info.symbol} -> {kind.name}"
+                    f"SymbolInformation.kind 未指定，从符号推断: '{pb_sym_info.symbol}' -> '{kind.name}'"
                 )
 
         return SymbolInformation(

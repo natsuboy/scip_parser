@@ -366,6 +366,52 @@ class Occurrence:
         """获取结束字符位置"""
         return self.range[3] if len(self.range) == 4 else self.range[2]
 
+    def has_enclosing_range(self) -> bool:
+        """检查 enclosing_range 是否可用且有效。
+
+        Returns:
+            True 如果 enclosing_range 至少有 4 个元素（多行格式）
+        """
+        return len(self.enclosing_range) >= 4
+
+    def get_enclosing_start_line(self) -> int:
+        """获取 enclosing_range 的起始行。
+
+        Returns:
+            起始行号（0-based），如果不可用返回 -1
+        """
+        if self.has_enclosing_range():
+            return self.enclosing_range[0]
+        return -1
+
+    def get_enclosing_end_line(self) -> int:
+        """获取 enclosing_range 的结束行。
+
+        Returns:
+            结束行号（0-based），如果不可用返回 -1
+        """
+        if self.has_enclosing_range():
+            return self.enclosing_range[2]
+        return -1
+
+    def get_effective_start_line(self) -> int:
+        """获取有效起始行，优先使用 enclosing_range。
+
+        Returns:
+            如果可用返回 enclosing_range 起始行，否则返回 range 起始行
+        """
+        enclosing = self.get_enclosing_start_line()
+        return enclosing if enclosing >= 0 else self.get_start_line()
+
+    def get_effective_end_line(self) -> int:
+        """获取有效结束行，优先使用 enclosing_range。
+
+        Returns:
+            如果可用返回 enclosing_range 结束行，否则返回 range 结束行
+        """
+        enclosing = self.get_enclosing_end_line()
+        return enclosing if enclosing >= 0 else self.get_end_line()
+
 
 @dataclass(frozen=True)
 class SymbolInformation:
@@ -449,6 +495,28 @@ class Document:
             该符号的所有出现位置
         """
         return [occ for occ in self.occurrences if occ.symbol == symbol]
+
+    def find_definition(self, symbol: str) -> Occurrence | None:
+        """查找文档中符号的定义出现位置。
+
+        这是一个便捷方法，用于在此文档中搜索特定符号的定义出现。
+
+        Args:
+            symbol: 要查找的符号字符串
+
+        Returns:
+            表示定义的 Occurrence，如果未找到则返回 None
+
+        Example:
+            >>> doc = index.get_document("main.py")
+            >>> def_occ = doc.find_definition("main.foo().")
+            >>> if def_occ:
+            ...     print(f"Defined at line {def_occ.get_start_line()}")
+        """
+        for occ in self.occurrences:
+            if occ.symbol == symbol and occ.is_definition:
+                return occ
+        return None
 
 
 @dataclass(frozen=True)

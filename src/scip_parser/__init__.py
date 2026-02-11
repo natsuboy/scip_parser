@@ -18,6 +18,16 @@ from scip_parser.core.types import (
     TextEncoding,
 )
 from scip_parser.query.api import QueryAPI
+from scip_parser.utils import (
+    extract_clean_documentation,
+    extract_signature,
+    extract_signature_from_any,
+)
+from scip_parser.query import (
+    CallSiteLocator,
+    CallSite,
+    find_call_site,
+)
 
 __version__ = "0.1.0"
 __all__ = [
@@ -32,4 +42,12 @@ __all__ = [
     "TextEncoding",
     "SymbolKind",
     "QueryAPI",
+    # Utils
+    "extract_clean_documentation",
+    "extract_signature",
+    "extract_signature_from_any",
+    # Query
+    "CallSiteLocator",
+    "CallSite",
+    "find_call_site",
 ]
